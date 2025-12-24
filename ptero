@@ -183,18 +183,19 @@ while true; do
             echo -e "${BOLD}${RED}╚══════════════════════════════════════════════════════════════╝${RESET}"
             echo
             
-            # Inline confirmation since 'confirm' function is not found
+            # Force user to type "yes" to confirm
             while true; do
-                read -p $'\e[93mDo you want to proceed with the Jexactyl migration? (y/N): \e[0m' -r yn
-                case $yn in
-                    [Yy]* ) proceed=yes; break;;
-                    [Nn]* | "" ) 
-                        echo -e "${YELLOW}${BOLD}Migration cancelled by user.${RESET}"
-                        read -p $'\e[93mPress Enter to continue...\e[0m' -r
-                        continue 2  # Skip the rest of this option and go back to menu
-                        ;;
-                    * ) echo -e "${RED}Please answer y (yes) or n (no).${RESET}";;
-                esac
+                echo -e "${YELLOW}${BOLD}To continue the migration, type ${UNDERLINE}yes${RESET}${BOLD} exactly and press Enter.${RESET}"
+                read -r confirmation
+                if [[ "$confirmation" == "yes" ]]; then
+                    proceed=yes
+                    break
+                else
+                    echo -e "${RED}${BOLD}✘ Confirmation failed. You typed: '$confirmation'${RESET}"
+                    echo -e "${YELLOW}Migration cancelled. Returning to menu...${RESET}"
+                    read -p $'\e[93mPress Enter to continue...\e[0m' -r
+                    continue 2  # Skip the rest and go back to main menu
+                fi
             done
             
             progress "Navigating to panel directory..."
@@ -271,33 +272,6 @@ while true; do
             echo -e "${WHITE}${DIM}Enjoy the enhanced experience!${RESET}"
             
             read -p $'\e[93mPress Enter to continue...\e[0m' -r
-            ;;
-        0)
-            clear
-            echo -e "${DANGER}"
-            cat << "EOF"
- ___ ___ __ __ __ __ ___ ___
-|" \ /" | /""\ /" | | "\ |" \ |" \ /" |
- \ \ // | / \ (: (__) :)|| | \ \ // |
- /\\ \/. | /' /\ \ \/ \/ |: | /\\ \/. |
-|: \. | // __' \ // __ \\ |. | |: \. |
-|. \ /: | / / \\ \(: ( ) :)/\ |\ |. \ /: |
-|___|\__/|___|(___/ \___)\__| |__/(__\_|_)|___|\__/|___|
-  
-                                                          
-EOF
-            print_box_header "GOODBYE" $DANGER
-            echo -e "\n${WHITE}${BOLD} Thank you for using the Hosting Manager!${RESET}"
-            echo -e "${YELLOW}${BOLD} Powered by MahimOp${RESET}\n"
-            echo -e "${NEON_GREEN}${BOLD}Original Creator: MahimOp${RESET}"
-            echo -e "${DIM}YouTube: https://www.youtube.com/@mahimxyz${RESET}"
-            echo -e "${DIM}Discord: https://discord.gg/zkDNdPpArS${RESET}\n"
-            echo -e "${GLOW}${BOLD}See you next time, Operator! 🦅✨${RESET}\n"
-            exit 0
-            ;;
-        *)
-            echo -e "${RED}${BOLD}✘ Invalid option! Please choose 0–10${RESET}"
-            sleep 2
             ;;
     esac
 done
